@@ -1,11 +1,21 @@
-# DTCA
+# About repo
+DCTA is a framework using 2 transformer-based models: one for text, one for image. It is quiet simple but very effective!
 
+The dir should be look like:
+```
+DCTA\
+  |-- datasets\                 # Twitter 15 and 17 in here
+  |-- pretrained_models\        # contains pretrained_models
+  |-- utils\                    
+  |-- main.py                   # pretrain/finetune a framework
+```
+
+# Set up repo
 ## 1. dataset and pretrained models
-Download twitter-2015 dataset and twitter-2017 dataset and put them into datasets/ .
+Download twitter-2015 dataset and twitter-2017 dataset at [here]() and put them into `datasets/` .
 
-Download pretrained models and put them into models/ .
+Download pretrained models using `download_pretrained_model.py` in folder `pretrained_models`.
 
-Dataset source: You can find download links in paper "Joint Multi-modal Aspect-Sentiment Analysis with Auxiliary Cross-modal Relation Detection".
 
 ## 2. environments
     pip install -r requirements.txt
