@@ -427,10 +427,10 @@ def main():
     data_image_dir = None
     if dataset_type == '2015':
         data_text_dir = 'datasets/twitter2015'
-        data_image_dir = 'datasets/images/twitter2015_images'
+        data_image_dir = 'datasets/twitter2015_images'
     elif dataset_type == '2017':
         data_text_dir = 'datasets/twitter2017'
-        data_image_dir = 'datasets/images/twitter2017_images'
+        data_image_dir = 'datasets/twitter2017_images'
 
 
     trainInputProcess = TrainInputProcess(text_model,

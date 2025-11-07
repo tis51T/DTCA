@@ -1,0 +1,8 @@
+datasets/
+bert-base-uncased/
+blip-image-captioning-base/
+clip-vit-base-patch32/
+roberta-base/
+vit-base-patch16-224-in21k/
+vit-gpt2-image-captioning/
+__pycache__/

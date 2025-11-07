@@ -148,8 +148,6 @@ class DTCAModel(nn.Module):
                 }
 
 
-
-
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, d_model, d_k, d_v, dropout=0.1, dropout2=False, attn_type='softmax'):
         super().__init__()

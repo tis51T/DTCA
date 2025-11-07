@@ -19,7 +19,7 @@ parser.add_argument('--batch_size', type=int,default=4, nargs='?',help='display 
 parser.add_argument('--output_result_file', type=str,default="./result.txt",nargs='?', help='display a string')
 parser.add_argument('--output_dir', type=str,default="./results",nargs='?', help='display a string')
 parser.add_argument('--lr', type=float, default=2e-5,nargs='?', help='display a float')
-parser.add_argument('--epochs', type=int, default=1,nargs='?', help='display an integer')
+parser.add_argument('--epochs', type=int, default=10,nargs='?', help='display an integer')
 parser.add_argument('--alpha', type=float, default=0.6,nargs='?', help='display a float')
 parser.add_argument('--beta', type=float, default=0.6,nargs='?', help='display a float')
 parser.add_argument('--text_model_name',type=str,default="roberta",nargs='?')
@@ -98,7 +98,7 @@ def build_compute_metrics_fn(text_inputs,pairs) -> Callable[[EvalPrediction], Di
 set_random_seed(random_seed)
 
 data_input_file = os.path.join("datasets/finetune",task_name,dataset_type,"input.pt")
-data_inputs = torch.load(data_input_file)
+data_inputs = torch.load(data_input_file, weights_only=False)
 train_word_ids = data_inputs["train"].word_ids
 train_pairs = data_inputs["train"]["pairs"]
 data_inputs["train"].pop("pairs")
@@ -175,16 +175,17 @@ text_best_metric = dict()
 
 training_args = TrainingArguments(
     output_dir=output_dir,
-    evaluation_strategy="epoch",
+    eval_strategy="epoch",  # Evaluate at the end of each epoch
     save_steps=10000,
     learning_rate=lr,
     per_device_train_batch_size=batch_size,
     per_device_eval_batch_size=batch_size,
     num_train_epochs=epochs,
     weight_decay=0.01,
-    label_names=["labels","cross_labels"]
+    logging_dir="./logs",  # Directory for logging
+    # logging_steps=200,  # Log every 10 steps
+    label_names=["labels", "cross_labels"]
 )
-
 
 trainer = Trainer(
     model=vb_model,
@@ -194,8 +195,14 @@ trainer = Trainer(
     compute_metrics=build_compute_metrics_fn(text_inputs=data_inputs["test"],pairs=test_pairs),
 )
 trainer.train()
+# Save training and evaluation metrics to a file
+log_file = os.path.join(output_dir, "training_log.txt")
+with open(log_file, "w", encoding="utf-8") as log_f:
+    for log_entry in trainer.state.log_history:
+        log_f.write(str(log_entry) + "\n")
 
-# output = trainer.predict(test_dataset=test_dataset)
+print(f"Training and evaluation metrics saved to {log_file}")
+
 
 # save results
 with open(output_result_file,"a",encoding="utf-8") as f:
@@ -206,7 +213,7 @@ with open(output_result_file,"a",encoding="utf-8") as f:
     model_para["batch_size"] = batch_size
     model_para["alpha"] = alpha
     model_para["beta"] = beta
-    f.write("参数:"+str(model_para) + "\n")
+    f.write("Parameter:"+str(model_para) + "\n")
     f.write("multi: "+ str(best_metric)+"\n")
     f.write("text: "+ str(text_best_metric)+"\n")
     f.write("\n")

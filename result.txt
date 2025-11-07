@@ -1,0 +1,12 @@
+参数:{'dataset_type': '2015', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {}
+text: {}
+
+参数:{'dataset_type': '2015', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 51.09557109557109, 'precision': 49.458483754512635, 'recall': 52.84474445515911}
+text: {'f1': 48.44192634560906, 'precision': 47.45605920444033, 'recall': 49.46962391513983}
+
+参数:{'dataset_type': '2015', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 65.29360210341805, 'precision': 64.22413793103449, 'recall': 66.39928698752227}
+text: {'f1': 65.0, 'precision': 63.98963730569949, 'recall': 66.0427807486631}
+
