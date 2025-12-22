@@ -432,7 +432,6 @@ def main():
         data_text_dir = 'datasets/twitter2017'
         data_image_dir = 'datasets/twitter2017_images'
 
-
     trainInputProcess = TrainInputProcess(text_model,
                                   text_model_type,
                                   image_model,
@@ -451,7 +450,6 @@ def main():
                                   pretrain_data_image_dir=pretrain_data_image_dir)
     trainInputProcess.generate_input()
     trainInputProcess.generate_output_file()
-
 
 if __name__ == '__main__':
     main()

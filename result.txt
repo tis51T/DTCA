@@ -10,3 +10,7 @@ text: {'f1': 48.44192634560906, 'precision': 47.45605920444033, 'recall': 49.469
 multi: {'f1': 65.29360210341805, 'precision': 64.22413793103449, 'recall': 66.39928698752227}
 text: {'f1': 65.0, 'precision': 63.98963730569949, 'recall': 66.0427807486631}
 
+Parameter:{'dataset_type': '2015', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 66.60359508041627, 'precision': 65.36675951717734, 'recall': 67.88813886210222}
+text: {'f1': 66.12903225806451, 'precision': 65.07936507936508, 'recall': 67.21311475409836}
+
