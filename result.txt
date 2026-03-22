@@ -14,3 +14,27 @@ Parameter:{'dataset_type': '2015', 'text_model': 'roberta', 'image_model': 'vit'
 multi: {'f1': 66.60359508041627, 'precision': 65.36675951717734, 'recall': 67.88813886210222}
 text: {'f1': 66.12903225806451, 'precision': 65.07936507936508, 'recall': 67.21311475409836}
 
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 90.49489395129616, 'precision': 88.34355828220859, 'recall': 92.7536231884058}
+text: {'f1': 90.56603773584906, 'precision': 88.47926267281106, 'recall': 92.7536231884058}
+
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 73.57736081205783, 'precision': 80.92016238159675, 'recall': 67.45628877608573}
+text: {'f1': 73.75707992448079, 'precision': 83.41637010676156, 'recall': 66.10265087422448}
+
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 88.67469879518072, 'precision': 88.46153846153845, 'recall': 88.88888888888889}
+text: {'f1': 88.87109687750201, 'precision': 88.37579617834395, 'recall': 89.3719806763285}
+
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 64.49468085106382, 'precision': 78.54251012145748, 'recall': 54.70953186689227}
+text: {'f1': 64.43433029908971, 'precision': 76.0552570990023, 'recall': 55.89396503102086}
+
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 71.48200093501636, 'precision': 81.15711252653928, 'recall': 63.868003341687555}
+text: {'f1': 71.30149812734082, 'precision': 81.09691160809372, 'recall': 63.61737677527152}
+
+Parameter:{'dataset_type': 'hotel', 'text_model': 'roberta', 'image_model': 'vit', 'batch_size': 4, 'alpha': 0.6, 'beta': 0.6}
+multi: {'f1': 77.76028783449517, 'precision': 84.21821724305893, 'recall': 72.22222222222221}
+text: {'f1': 77.6978417266187, 'precision': 84.12852969814996, 'recall': 72.18045112781954}
+

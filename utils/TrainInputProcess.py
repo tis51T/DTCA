@@ -7,7 +7,7 @@ from PIL import Image,ImageFile
 import argparse
 
 from transformers import AutoTokenizer,GPT2TokenizerFast, ViTImageProcessor, VisionEncoderDecoderModel, BertModel, RobertaModel, BlipForConditionalGeneration,BlipProcessor, CLIPProcessor, AutoProcessor
-
+import gc
 
 class TrainInputProcess:
     def __init__(self, 
@@ -57,10 +57,10 @@ class TrainInputProcess:
 
         self.image_process = ViTImageProcessor.from_pretrained(self.image_model)
 
-    def generate_input(self):
+    def generate_input(self, mask="$T$"):
         if self.train_type == 0:
             #  pre process
-            self.get_text_dataset()
+            self.get_text_dataset(mask=mask)
             if self.finetune_task == 'im2t':
                 self.generate_im2t_input()
             elif self.finetune_task in ('clipc', 'dualc'):
@@ -157,7 +157,7 @@ class TrainInputProcess:
 
     # process fine-tune text
     # process_label: False-- 5 class; True-- 7 class.
-    def get_text_dataset(self, process_label=False):
+    def get_text_dataset(self, process_label=False, mask = "$T$"):
         for dataset_type in self.dataset_types:
             data_file_name = dataset_type + self.text_type
             text_path = os.path.join(self.data_text_dir, data_file_name)
@@ -174,7 +174,7 @@ class TrainInputProcess:
                     aspect = f.readline().rstrip('\n').split()
                     sentiment = f.readline().rstrip('\n')
                     image_path = f.readline().rstrip('\n')
-                    start_pos = text.index("$T$")
+                    start_pos = text.index(mask)
                     end_pos = start_pos + len(aspect) - 1
                     text = text[:start_pos] + aspect + text[start_pos+1:]
                     sentence_d[" ".join(text)].append((start_pos,end_pos,sentiment,image_path))
@@ -304,35 +304,60 @@ class TrainInputProcess:
             self.input[dataset_type] = tokenized_inputs
 
     def generate_dualc_input(self):
+        processor = AutoProcessor.from_pretrained(self.image_model)
+        if self.finetune_task == 'clipc':
+            clip_tokenizer = AutoTokenizer.from_pretrained(self.image_model)
+
         for dataset_type in self.dataset_types:
             sentence_l, image_l, label_l, pair_l = self.data_dict[dataset_type]
-            images = []
+
+            pixel_values_list = []
 
             for image_path in image_l:
                 image_file_path = os.path.join(self.data_image_dir, image_path)
-                image = Image.open(image_file_path)
-                image = image.convert('RGB')
-                images.append(image)
 
-            processor = AutoProcessor.from_pretrained(self.image_model)
+                with Image.open(image_file_path) as img:
+                    img = img.convert("RGB")
+                    img = img.resize((224, 224))  # 🔥 cực kỳ quan trọng
+
+                    pv = processor(images=img, return_tensors="pt")["pixel_values"]
+                    pixel_values_list.append(pv)
+
+            pixel_values = torch.cat(pixel_values_list, dim=0)
+
+            # 🔽 phần text giữ nguyên
+            new_sentence_l = [" ".join(sentence) for sentence in sentence_l]
+
             if self.finetune_task == 'clipc':
-                clip_tokenizer = AutoTokenizer.from_pretrained(self.image_model)
-            pixel_values = processor(images=images,return_tensors="pt")["pixel_values"]
-            new_sentence_l = []
-            for sentence in sentence_l:
-                new_sentence_l.append(" ".join(sentence))
-            if self.finetune_task == 'clipc':
-                clip_tokenized_inputs = clip_tokenizer(new_sentence_l, truncation=True, padding='max_length', max_length=60, return_tensors='pt')
-            tokenized_inputs = self.tokenizer(sentence_l, truncation=True, is_split_into_words=True, padding='max_length', max_length=60, return_tensors='pt')
+                clip_tokenized_inputs = clip_tokenizer(
+                    new_sentence_l,
+                    truncation=True,
+                    padding='max_length',
+                    max_length=60,
+                    return_tensors='pt'
+                )
+
+            tokenized_inputs = self.tokenizer(
+                sentence_l,
+                truncation=True,
+                is_split_into_words=True,
+                padding='max_length',
+                max_length=60,
+                return_tensors='pt'
+            )
+
+            # labels (giữ nguyên code của bạn)
             text_labels = []
             cross_labels = []
+
             for i, label in enumerate(label_l):
-                word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+                word_ids = tokenized_inputs.word_ids(batch_index=i)
                 label_ids = []
                 cross_label_ids = []
                 label_n = len(label)
                 pre_word_idx = None
-                for word_idx in word_ids:  # Set the special tokens to -100.
+
+                for word_idx in word_ids:
                     if word_idx is None or word_idx >= label_n:
                         label_ids.append(-100)
                         cross_label_ids.append(0)
@@ -344,21 +369,29 @@ class TrainInputProcess:
                             label_ids.append(-100)
                             cross_label_ids.append(0)
                     pre_word_idx = word_idx
-                cross_labels.append(cross_label_ids)
+
                 text_labels.append(label_ids)
+                cross_labels.append(cross_label_ids)
+
             tokenized_inputs["labels"] = torch.tensor(text_labels)
-            tokenized_inputs["pairs"] = pair_l
             tokenized_inputs["cross_labels"] = torch.tensor(cross_labels)
+            tokenized_inputs["pairs"] = pair_l
             tokenized_inputs["pixel_values"] = pixel_values
+
             if self.finetune_task == 'clipc':
                 tokenized_inputs["clip_input_ids"] = clip_tokenized_inputs["input_ids"]
+
             self.input[dataset_type] = tokenized_inputs
+
+            # 🧹 dọn RAM
+            del pixel_values_list
+            gc.collect()
 
 
 def main():
     parser = argparse.ArgumentParser()
     # twitter 2015 or 2017
-    parser.add_argument('--dataset_type', type=str, default='2015', nargs='?', help='display an string')
+    parser.add_argument('--dataset_type', type=str, default='hotel', nargs='?', help='display an string')
     # text model: roberta, bert, albert, electra
     parser.add_argument('--text_model_type', type=str, default='roberta', nargs='?', help='display an string')
     # image model: vit
@@ -431,6 +464,9 @@ def main():
     elif dataset_type == '2017':
         data_text_dir = 'datasets/twitter2017'
         data_image_dir = 'datasets/twitter2017_images'
+    elif dataset_type == "hotel":
+        data_text_dir = 'datasets/hotel'
+        data_image_dir = 'datasets/hotel_images'
 
     trainInputProcess = TrainInputProcess(text_model,
                                   text_model_type,
@@ -448,7 +484,7 @@ def main():
                                   data_image_dir=data_image_dir,
                                   pretrain_data_text_dir=pretrain_data_text_dir,
                                   pretrain_data_image_dir=pretrain_data_image_dir)
-    trainInputProcess.generate_input()
+    trainInputProcess.generate_input(mask="$AT$")
     trainInputProcess.generate_output_file()
 
 if __name__ == '__main__':

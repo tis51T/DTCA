@@ -13,7 +13,7 @@ import argparse
 import random
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset_type', type=str,default='2015', nargs='?',help='display a string')
+parser.add_argument('--dataset_type', type=str,default='hotel', nargs='?',help='display a string')
 parser.add_argument('--task_name', type=str,default='dualc', nargs='?',help='display a string')
 parser.add_argument('--batch_size', type=int,default=4, nargs='?',help='display an integer')
 parser.add_argument('--output_result_file', type=str,default="./result.txt",nargs='?', help='display a string')
@@ -117,19 +117,19 @@ test_dataset  = MyDataSet2(inputs=data_inputs["test"])
 
 # text pretrained model selected
 if text_model_name == 'bert':
-    model_path1 = './pretrained_models/bert-base-uncased'
+    model_path1 = './models/bert-base-uncased'
     config1 = AutoConfig.from_pretrained(model_path1)
     text_pretrained_dict = BertForTokenClassification.from_pretrained(model_path1).state_dict()
 elif text_model_name == 'roberta':
-    model_path1 = "./pretrained_models/roberta-base"
+    model_path1 = "./models/roberta-base"
     config1 = AutoConfig.from_pretrained(model_path1)
     text_pretrained_dict = RobertaForTokenClassification.from_pretrained(model_path1).state_dict()
 elif text_model_name == 'albert':
-    model_path1 = "./pretrained_models/albert-base-v2"
+    model_path1 = "./models/albert-base-v2"
     config1 = AutoConfig.from_pretrained(model_path1)
     text_pretrained_dict = AlbertForTokenClassification.from_pretrained(model_path1).state_dict()
 elif text_model_name == 'electra':
-    model_path1 = './pretrained_models/electra-base-discriminator'
+    model_path1 = './models/electra-base-discriminator'
     config1 = AutoConfig.from_pretrained(model_path1)
     text_pretrained_dict = AlbertForTokenClassification.from_pretrained(model_path1).state_dict()
 else:
@@ -138,19 +138,19 @@ else:
 
 # image pretrained model selected
 if image_model_name == 'vit':
-    model_path2 = "./pretrained_models/vit-base-patch16-224-in21k"
+    model_path2 = "./models/vit-base-patch16-224-in21k"
     config2 = AutoConfig.from_pretrained(model_path2)
     image_pretrained_dict = ViTForImageClassification.from_pretrained(model_path2).state_dict()
 elif image_model_name == 'swin':
-    model_path2 = "./pretrained_models/swin-tiny-patch4-window7-224"
+    model_path2 = "./models/swin-tiny-patch4-window7-224"
     config2 = AutoConfig.from_pretrained(model_path2)
     image_pretrained_dict = SwinForImageClassification.from_pretrained(model_path2).state_dict()
 elif image_model_name == 'deit':
-    model_path2 = "./pretrained_models/deit-base-patch16-224"
+    model_path2 = "./models/deit-base-patch16-224"
     config2 = AutoConfig.from_pretrained(model_path2)
     image_pretrained_dict = DeiTModel.from_pretrained(model_path2).state_dict()
 elif image_model_name == 'convnext':
-    model_path2 = './pretrained_models/convnext-tiny-224'
+    model_path2 = './models/convnext-tiny-224'
     config2 = AutoConfig.from_pretrained(model_path2)
     image_pretrained_dict = ConvNextForImageClassification.from_pretrained(model_path2).state_dict()
 else:

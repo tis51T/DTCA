@@ -1,5 +1,5 @@
 # About repo
-DCTA is a framework using 2 transformer-based models: one for text, one for image. It is quiet simple but very effective!
+[DCTA](https://aclanthology.org/2022.aacl-main.32/) is a framework using 2 transformer-based models: one for text, one for image. It is quiet simple but very effective!
 
 The dir should be look like:
 ```
@@ -12,7 +12,7 @@ DCTA\
 
 # Set up repo
 ## 1. dataset and pretrained models
-Download twitter-2015 dataset and twitter-2017 dataset at [here]() and put them into `datasets/` .
+Download twitter-2015 dataset and twitter-2017 dataset at [here](https://drive.google.com/drive/folders/1rm0FtHOTMUfZfRjWIE9Ukn_1D5MDXQy3) and put them into `datasets/` .
 
 Download pretrained models using `download_pretrained_model.py` in folder `pretrained_models`.
 
